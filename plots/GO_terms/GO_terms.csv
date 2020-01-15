@@ -1,0 +1,18 @@
+﻿description,type,Fold_enrichment,DEG_item
+response to stimulus,Upregulated,2.463743029,262
+cellular process,Upregulated,1.288346445,251
+single-organism process,Upregulated,1.467153108,247
+biological regulation,Upregulated,1.758341129,155
+multi-organism process,Upregulated,3.59137662,120
+localization,Upregulated,1.957736007,106
+signaling,Upregulated,3.753558628,104
+defense response to other organism,Upregulated,5.871596614,101
+immune system process,Upregulated,5.780562281,94
+death,Upregulated,6.954046862,57
+programmed cell death,Upregulated,7.292334219,54
+ single-organism process,Downregulated,1.535848082,124
+starch metabolic process,Downregulated,11.93806655,22
+shoot system morphogenesis,Downregulated,4.267847344,16
+circadian rhythm,Downregulated,7.393858338,10
+rhythmic process,Downregulated,7.393858338,10
+response to red light,Downregulated,8.510046568,7
