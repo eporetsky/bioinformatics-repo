@@ -1,12 +1,16 @@
-from Bio import SeqIO
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
-from Bio.Alphabet import IUPAC
-
 import glob
-fasta_list = glob.glob('./*.fa') # returns a list of all .fa files in the folder
 
+from Bio import SeqIO
+
+"""
+Use this script to extract the longest isoform of a protein sequence (or DNA) from fasta
+This script is tailored to the maize genomes naming convention. Adjust for other genomes
+genome_name - currently is the number of the maize genome plus genome name
+name (gene name) - currently the first 14 letters of each fasta sequence
+"""
+fasta_list = glob.glob('*.fa') # returns a list of all .fa files in the folder
 for fasta in fasta_list: 
+	print(str("Processing "+fasta))
 	# genome_name is a maize specific containing genome number and name (i.e. 14_Mo17)
 	genome_name = str(fasta.split("-")[4][9:11]+"_"+fasta.split("-")[1]+".fa") 
 	records = list(SeqIO.parse(fasta, "fasta")) # extract all records to list
