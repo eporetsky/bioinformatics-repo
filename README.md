@@ -1,1 +1,1 @@
-# bioinformatics-hodgepodge
+# bioinformatics-assortment
