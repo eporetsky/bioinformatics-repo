@@ -38,9 +38,9 @@ dfg <- dft %>%
 # Use this write.table method to save data as TASSEL phenotype format for GWAS
 # Useful if you want to rename the first cell of the table to anything
 # https://stackoverflow.com/questions/2478352/write-table-writes-unwanted-leading-empty-column-to-header-when-has-rownames
-write.table(data.frame("<trait>"=rownames(dfg),dfg, check.names = FALSE),"181029_282_panel_Fvert_3d.tsv", 
+write.table(data.frame("<trait>"=rownames(dfg),dfg, check.names = FALSE),"output.tsv", 
             row.names=FALSE, sep="\t", quote=FALSE, )
 
 # With dplyr group_by function change the name of the "Rep" column to "<trait>"
 colnames(dfg)[1] <- "<trait>"
-write.table(dfg, "181029_282_panel_Fvert_3d.tsv", row.names=FALSE, sep="\t", quote=FALSE, )
+write.table(dfg, "output.tsv", row.names=FALSE, sep="\t", quote=FALSE, )
