@@ -1,42 +1,27 @@
 #!/bin/bash
 
-# Copied from: https://genozip.readthedocs.io/fastq-to-bam-pipeline.html
-# TODO: Make notes and modifications to work with specified files
+ref="genome_name"
 
-ref=GRCh38_full_analysis_set_plus_decoy_hla.fa
-study=mystudy
-fastq=myfastqdir
-mapped=mymappeddir
+mkdir mapped/
+mkdir reports/
 
-files=($fastq/*.genozip)
+for file in *.genozip
+do
+    sample=`echo $file | awk -F'[_.]' '{print $1}'` # if the files are in a different folder: | awk -F'[_/]' '{print $2}'`
+    out=mapped/${sample}.bam.genozip
 
-processed=1
+    echo =========================================
+    echo Sample $sample
+    echo File $file
+    echo Ref ${ref}.ref.genozip 
+    echo =========================================
 
-while (( processed == 1 )); do
-    processsed=0
-    for file in ${files[@]}
-    do
-        sample=`echo $file |grep -o -E sample'[[:digit:]]{2}'`  # convert the file name to a sample name
-        out=$mapped/${sample}.bam.genozip
+    genocat --interleave $file -e ${ref}.ref.genozip                       |
+    fastp --stdin --stdout --html --interleaved_in --stdout --html reports/${sample}.html  |
+    bwa mem $ref - -p -t 32 |					          
+    sambamba view -S -f bam -o /dev/stdout /dev/stdin |
+    sambamba sort  --tmpdir="tmpmba" -t 32 -o /dev/stdout /dev/stdin |
+    genozip -e ${ref}.ref.genozip -i bam -o $out -t                          
 
-        if [ -f $out ]; then continue; fi # already processed
-        if [ -f ${out}.doing_now ]; then continue; fi # another instance of this script is working on it
-
-        processed=1
-        touch ${out}.doing_now
-
-        echo =========================================
-        echo Sample $sample
-        echo =========================================
-
-        ( genocat --interleave $file -e ${ref%.fa}.ref.genozip                                                  || >&2 echo "genocat exit=$?" )|\
-        ( fastp --stdin --interleaved_in --stdout --html ${fastq}/${sample}.html --json ${fastq}/${sample}.json || >&2 echo "fastp exit=$?"   )|\
-        ( bwa mem $ref - -p -t 54 -T 0 -R "@RG\tID:$sample\tSM:$study\tPL:Illumina"                             || >&2 echo "bwa exit=$?"     )|\
-        ( samtools view -h -OSAM                                                                                || >&2 echo "samtools exit=$?")|\
-        ( bamsort fixmates=1 adddupmarksupport=1 inputformat=sam outputformat=sam inputthreads=5 outputthreads=5 sortthreads=30 level=1  || >&2 echo "bamsort exit=$?" )|\
-        ( bamstreamingmarkduplicates inputformat=sam inputthreads=3 outputthreads=3 level=1                     || >&2 echo "bamstreamingmarkduplicates exit=$?" )|\
-        ( genozip -e ${ref%.fa}.ref.genozip -i bam -o $out -t                                                   || >&2 echo "genozip exit=$?" )
-
-        rm ${out}.doing_now
     done
-done
+
