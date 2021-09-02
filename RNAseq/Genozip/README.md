@@ -14,13 +14,13 @@ TODO: Complete section
 ```
 wget -i ftp_file_list.txt
 # paired-end
-for d in *1.fastq.gz ; do ( genozip --replace --reference genome.ref.genozip --pair $d ${d%_1.fastq.gz}_2.fastq.gz); done
+for d in *_1.fastq.gz ; do ( genozip --replace --reference genome.ref.genozip --pair $d ${d%_1.fastq.gz}_2.fastq.gz); done
 # single-end (not tested yet, but should work)
 for d in *.fastq.gz ; do ( genozip --replace --reference genome.ref.genozip $d; done
 ```
 
 ## To quantify the bam.genozip files using quant3p:
-NOTE: Used for 3' RNA-seq data only - https://github.com/ctlab/quant3p\
+NOTE: Used for 3' RNA-seq data only - https://github.com/ctlab/quant3p \
 TODO: Confirm that the code below works\
 \
 To run rTASSEL GLM with GNU parallel:\
