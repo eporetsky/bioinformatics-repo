@@ -10,6 +10,11 @@ TODO: Complete section
 * snakemake
 * few more missing
 
+## To generate a genozip reference genome file
+```
+genozip --make-reference reference_genome.fa.gz
+```
+
 ## To download and compress files using genozip:
 ```
 wget -i ftp_file_list.txt
