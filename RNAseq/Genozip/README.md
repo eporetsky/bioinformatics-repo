@@ -57,7 +57,7 @@ sudo mount -t tmpfs -o size=30000m tmpfs ramdisk/
 ```
 Unzip and create index using genozip
 ```
-for d in find *.genozip ; do (genounzip $d --index --reference reference.ref.genozip --output ramdisk/${d%.genozip}); done
+for d in *.genozip ; do (genounzip $d --index --reference reference.ref.genozip --output ramdisk/${d%.genozip}); done
 
 # If your paired-end data comes with singleton fastq files, merge the two files using samtools
 cd ramdisk/
