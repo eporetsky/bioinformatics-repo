@@ -54,7 +54,6 @@ mkdir ramdisk
 Mount ramdisk of specified size
 ```
 sudo mount -t tmpfs -o size=30000m tmpfs ramdisk/
-cd ramdisk
 ```
 Unzip and create index using genozip
 ```
@@ -69,7 +68,25 @@ for d in *.singleton.bam ; do(rm ${d%.singleton.bam}.bam ${d%.singleton.bam}.bam
 
 #### To quantify the bam.genozip files using featureCounts:
 ```
-featureCounts -T 32 -a ../../reference.gtf -o counts.txt *.bam
+featureCounts -t exon,CDS -T 32 -a ../../reference.gtf -o counts.txt *.bam
+
+# Not sure how prevalent it is but the maize V4 Phytozome GFF3 file lacks "exon" features for many genes
+# while retaining the CDS region. With default featureCounts only 28724 genes are counted, if you add CDS
+# 39498 are counted. Running -t exon,CDS will count both features and overlapping features are counted once.
+
+# For example:
+grep "Zm00001d013028" Zm-B73-REFERENCE-GRAMENE-4.0_Zm00001d.2.gff3
+Chr5	gramene	gene	3464279	3465049	.	-	.	ID=gene:Zm00001d013028;biotype=protein_coding;description=Zm00001d013028;gene_id=Zm00001d013028;logic_name=maker_gene
+Chr5	gramene	mRNA	3464279	3465049	.	-	.	ID=transcript:Zm00001d013028_T001;Parent=gene:Zm00001d013028;biotype=protein_coding;transcript_id=Zm00001d013028_T001
+Chr5	gramene	exon	3464279	3465049	.	-	.	Parent=transcript:Zm00001d013028_T001;Name=Zm00001d013028_T001.exon1;constitutive=1;ensembl_end_phase=0;ensembl_phase=0;exon_id=Zm00001d013028_T001.exon1;rank=1
+Chr5	gramene	CDS	3464279	3465049	.	-	0	ID=CDS:Zm00001d013028_P001;Parent=transcript:Zm00001d013028_T001;protein_id=Zm00001d013028_P001
+
+grep "Zm00001d013028" Zmays_493_RefGen_V4.gene.gff3
+5	phytozomev12	gene	3464279	3465049	.	-	.	ID=Zm00001d013028.RefGen_V4;Name=Zm00001d013028
+5	phytozomev12	mRNA	3464279	3465049	.	-	.	ID=Zm00001d013028_T001.RefGen_V4;Name=Zm00001d013028_T001;pacid=40292292;longest=1;Parent=Zm00001d013028.RefGen_V4
+5	phytozomev12	CDS	3464279	3465049	.	-	0	ID=Zm00001d013028_T001.RefGen_V4.CDS.1;Parent=Zm00001d013028_T001.RefGen_V4;pacid=40292292
+
+# Note: Chromosome names are not identical so the files are not immediately interchangeable
 ```
 
 
