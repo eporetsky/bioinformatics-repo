@@ -19,6 +19,7 @@ mkdir reports/
 for file in *.genozip
 do
     sample=`echo $file | awk -F'[_.]' '{print $1}'` # if the files are in a different folder: | awk -F'[_/]' '{print $2}'`
+    # Use something like this if there is a dot in the filename: awk -F'[.]' '{print $1"."$2}'
     out=mapped/${sample}.bam.genozip
 
     echo =========================================
