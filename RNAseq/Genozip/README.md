@@ -15,6 +15,11 @@ TODO: Complete section
 genozip --make-reference reference_genome.fa.gz
 ```
 
+## To generate a BWA reference genome file
+```
+bwa index -p reference_genome reference_genome.fa.gz
+```
+
 ## To download and compress files using genozip:
 ```
 wget -i ftp_file_list.txt
@@ -42,7 +47,10 @@ TODO: Confirm that the code below works\
 \
 Make sure you have a gtf file. To convert gff3 to gtf:
 ```
+# Without gzip:
 gffread reference.gff3 -T -o reference.gtf
+# With gzip (no intermediate files):
+gunzip --keep --stdout reference.gff3.gz | gffread -T | gzip --suffix "reference.gtf" > reference.gtf.gz
 ```
 
 (The goal of using ramdisk is to reduce writing to SSD drive+speed-up analysis)\
@@ -53,7 +61,7 @@ mkdir ramdisk
 ```
 Mount ramdisk of specified size
 ```
-sudo mount -t tmpfs -o size=30000m tmpfs ramdisk/
+sudo mount -t tmpfs -o size=80000m tmpfs ramdisk/
 ```
 Unzip and create index using genozip
 ```
@@ -100,6 +108,11 @@ quant3p -p 32 -n project_name -g reference.gtf *.bam
 
 ## Unmount ramdisk when done
 Note: Don't forget to backup any files before unmounting or turning off computer
+Unmount ramdisk of specified size
+```
+sudo umount ramdisk
+rm -r ramdisk/
+```
 
 ## Notes
 * bwa mem doesn't recognized paired-end reads if genozip with --optimize-DESC
