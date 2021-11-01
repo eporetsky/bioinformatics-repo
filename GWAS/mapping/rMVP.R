@@ -41,3 +41,24 @@ imMVP <- MVP(
   threshold=0.05,
   method=c("GLM", "MLM", "FarmCPU")
 )
+
+
+# To run multiple phenotypes (each phenotype outputs a separate file):
+for(col in 2:dim(phenotype)[2]){
+  temp <- phenotype[,c(1,col)]
+  imMVP <- MVP(
+    phe=temp,
+    geno=genotype,
+    map=map,
+    nPC.GLM=5,   ##if you have added PCs into covariates, please keep there closed.
+    nPC.MLM=3,  ##if you don't want to add PCs as covariates, please comment out the parameters instead of setting the nPC to 0.
+    nPC.FarmCPU=3,
+    priority="speed",   ##for Kinship construction
+    vc.method="BRENT",  ##only works for MLM, BRENT, HE, EMMA
+    maxLoop=10,
+    method.bin="static",   ## "FaST-LMM", "static" (#only works for FarmCPU)
+    threshold=0.05,
+    outpath="results/",
+    method=c("GLM", "MLM", "FarmCPU")
+  )
+}

@@ -19,5 +19,11 @@ for d in *.genozip ; do (genounzip $d --index --replace --reference genome.ref.g
 ## To merge the files
 The goal is to visualize the merged bam files from each condition
 ```
-samtools merge merged.bam file1.bam file2.bam...
+sambamba merge --nthreads n --show_progress merged.bam file1.bam file2.bam...
+```
+
+## To convert gtf to bed
+```
+# Not sure if this will be used
+gtf2bed < genome.gtf > genome.bed
 ```
