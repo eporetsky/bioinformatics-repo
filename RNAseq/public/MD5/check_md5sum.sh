@@ -1,4 +1,14 @@
-cat md5.csv | 
+#!/bin/bash
+
+while getopts f: flag
+do
+    case "${flag}" in
+        f) file=${OPTARG};;
+    esac
+done
+
+
+cat ${file} | 
   while read line 
   do 
     FILENAME=$(echo $line | cut -d',' -f1 )

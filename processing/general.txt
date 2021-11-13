@@ -1,0 +1,4 @@
+# Compressing a whole folder
+# https://www.tecmint.com/compress-files-faster-in-linux/
+tar --use-compress-program="pigz -k --best" -cf BLASTdb.tar.gz BLASTdb
+
