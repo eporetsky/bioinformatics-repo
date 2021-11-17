@@ -76,7 +76,10 @@ for d in *.singleton.bam ; do(rm ${d%.singleton.bam}.bam ${d%.singleton.bam}.bam
 
 #### To quantify the bam.genozip files using featureCounts:
 ```
+# Single-end:
 featureCounts -t exon,CDS -T 32 -a ../../reference.gtf -o counts.txt *.bam
+# Paired-end (add -p)
+featureCounts -p -t exon,CDS -T 32 -a ../../reference.gtf -o counts.txt *.bam
 
 # Not sure how prevalent it is but the maize V4 Phytozome GFF3 file lacks "exon" features for many genes
 # while retaining the CDS region. With default featureCounts only 28724 genes are counted, if you add CDS

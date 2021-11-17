@@ -31,7 +31,7 @@ do
     hisat2 -p 32 --max-intronlen 6000 -x ${hstref}.fa -1 pair1.fastq.gz -2 pair2.fastq.gz |				          
     sambamba view -S -f bam -o /dev/stdout /dev/stdin |
     sambamba sort  --tmpdir="tmpmba" -t 32 -o mapped/${sample}.bam /dev/stdin
-    featureCounts -t exon,CDS -T 32 -a Zmays_493_RefGen_V4_Phytozome.gene.gtf -o counts/${sample}.counts mapped/${sample}.bam
+    featureCounts -p -t exon,CDS -T 32 -a Zmays_493_RefGen_V4_Phytozome.gene.gtf -o counts/${sample}.counts mapped/${sample}.bam
     genozip -e ${hstref}.ref.genozip --replace -i bam -o $out mapped/${sample}.bam
     rm mapped/${sample}.bam.bai
     genozip --replace --reference ${gnzref}.ref.genozip --pair ${sample}_1.fastq.gz ${sample}_2.fastq.gz
