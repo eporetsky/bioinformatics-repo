@@ -42,7 +42,7 @@ imMVP <- MVP(
   method=c("GLM", "MLM", "FarmCPU")
 )
 
-
+# Need to install pigz - faster parallel compression tool. Or comment it out.
 # To run multiple phenotypes (each phenotype outputs a separate file):
 for(col in 2:dim(phenotype)[2]){
   temp <- phenotype[,c(1,col)]
@@ -61,4 +61,9 @@ for(col in 2:dim(phenotype)[2]){
     outpath="results/",
     method=c("GLM", "MLM", "FarmCPU")
   )
+  gc()
+  # Compress the output csv file
+  system("pigz dolab_results/*.FarmCPU.csv")
+  system("pigz dolab_results/*.GLM.csv")
+  system("pigz dolab_results/*.MLM.csv")
 }
