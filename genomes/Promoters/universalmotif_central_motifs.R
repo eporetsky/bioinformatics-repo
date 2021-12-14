@@ -26,4 +26,4 @@ enriched <-  enrich_motifs(family_motifs, degs, ctrl, max.p=0.05, max.q=0.05, ma
 merged <- merge(enriched, jdf, by.x=c('motif'), by.y=c('name'))
 merged <- merged[order(merged$Qval), ]
 write.table(merged, "enriched_yCtrl.tsv", sep="\t")
-
+\
