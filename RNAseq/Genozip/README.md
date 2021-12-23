@@ -15,9 +15,12 @@ TODO: Complete section
 genozip --make-reference reference_genome.fa.gz
 ```
 
-## To generate a BWA reference genome file
+## To generate a reference genome file
 ```
+# For BWA
 bwa index -p reference_genome reference_genome.fa.gz
+# For hisat2
+hisat2-build -p 32 reference_genome.fa reference_genome
 ```
 
 ## To download and compress files using genozip:
@@ -51,6 +54,8 @@ Make sure you have a gtf file. To convert gff3 to gtf:
 gffread reference.gff3 -T -o reference.gtf
 # With gzip (no intermediate files):
 gunzip --keep --stdout reference.gff3.gz | gffread -T | gzip --suffix "reference.gtf" > reference.gtf.gz
+# If there are question marks in the srand column, they can be removed with:
+awk '!($7=="?")' Zea_mays.AGPv3.22.gff3 > Zea_mays.AGPv3.22.corrected.gff3
 ```
 
 (The goal of using ramdisk is to reduce writing to SSD drive+speed-up analysis)\
