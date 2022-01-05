@@ -22,7 +22,17 @@ Mount ramdisk of specified size
 sudo mount -t tmpfs -o size=80000m tmpfs ramdisk/
 ```
 
-## Download all the files to the ramdisk
+## Analyze one sample at a time using the bash script in the iterate-files
+```
+# For example:
+-d: txt file with fastq ftp links, one line per file. Should add ftp:// to beginning of line of missing
+-g: Genozip reference file. I use the same one for all fastq files of the same species. 
+-h: Name of hisat2 index and alignment-specific genozip file, use same genome for both.
+-t: GTF file that will be used with feature counts.
+bash fastq2bam-single-ramdisk-downloader.sh -d ftp_file_list.txt -g Zm-B73-REFERENCE-NAM-5.0 -h Zmays_493_APGv4_Phytozome -t Zmays_493_RefGen_V4_Phytozome.gene.gtf
+```
+
+## Alternatively: Download all the files to the ramdisk
 ```
 wget -i ftp_file_list.txt
 # paired-end
