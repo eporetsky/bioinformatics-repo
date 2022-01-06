@@ -1,0 +1,18 @@
+library(ggplot2)
+library(tidyr)
+library(ggthemes)
+BiocManager::install("ggthemes")
+
+
+
+data <- read.table("S1_53468073.txt", sep="\t", header=T)[,6:7]
+df <- gather(data,key="Genotype", value="C250_mz_161_RT_9_66")
+
+ggplot(data=df) + 
+    geom_boxplot( aes(x=factor(Genotype), y=C250_mz_161_RT_9_66)) +
+    theme_minimal() +
+    scale_fill_grey() 
+?geom_boxplot
+?gather
+head(data)
+boxplot(df)
