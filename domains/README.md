@@ -72,5 +72,5 @@ interproscan.sh -i test_all_appl.fasta -f tsv
 # 100% done:  InterProScan analyses completed
 
 To Run InterProScan:
-./interproscan.sh -i proteomes/protein_seqs.clean.fa -f tsv -cpu 32 -dp
+./interproscan.sh -i proteomes/protein_seqs.clean.fa -f tsv,GFF3 -cpu 32 -dp -dra
 ```
