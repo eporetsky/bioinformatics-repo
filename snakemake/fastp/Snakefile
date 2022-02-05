@@ -1,0 +1,64 @@
+import glob, os
+
+# For RNAseq workflow testing change the fastp --reads_to_process to
+# a small number (10000) for faster and simpler workflow testing
+
+# To run this snakemake workflow use:
+# single-end: snakemake --snakefile fastp.Snakefile --config sp="single" rtp=10000 --cores 1
+# paired-end: snakemake --snakefile fastp.Snakefile --config sp="paired" rtp=10000 --cores 1
+
+########################## Globals ###########################
+
+# Read all fastq.gz files in the folder and generate a sample list
+# https://stackoverflow.com/questions/45971333/use-of-argparse-in-snakemake-script
+# snakemake --config zz="filename"
+fastq_type = config['sp']
+if fastq_type == "paired":
+  SAMPLES = [fl.replace("_1.fastq.gz","") for fl in glob.glob("*_1.fastq.gz")]
+elif fastq_type == "single":
+  SAMPLES = [fl.replace(".fastq.gz","") for fl in glob.glob("*.fastq.gz")]
+
+# If reads_to_process not defined, set to 0 to process all reads
+try: rtp = config['rtp'] 
+except: rtp=0
+
+########################## Rules ###########################
+
+rule all:
+  input:
+    # The snakemake workflow should include these files
+    expand("fastp/{sample}.fastp.gz", sample=SAMPLES)
+
+# Run fastp trimming on the fastq file
+if fastq_type == "paired":
+  rule run_fastp:
+    input:
+      "{sample}_1.fastq.gz",
+      "{sample}_2.fastq.gz",
+    output:
+      "fastp/{sample}_1.fastp.gz",
+      "fastp/{sample}_2.fastp.gz",
+      "reports/{sample}.html"
+    params:
+      rtp = rtp
+    shell:
+      """fastp\
+      --reads_to_process {params.rtp}\
+      --in1 {input[0]} --out1 {output[0]}\
+      --in2 {input[1]} --out2 {output[1]}\
+      --html {output[2]}"""
+if fastq_type == "single":
+  rule run_fastp:
+    input:
+      "{sample}.fastq.gz",
+    output:
+      "fastp/{sample}.fastp.gz",
+      "reports/{sample}.html"
+    params:
+      rtp = rtp
+    shell:
+      """fastp\
+      --reads_to_process {params.rtp}\
+      --in1 {input[0]} --out1 {output[0]}\
+      --html {output[1]}"""
+
