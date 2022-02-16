@@ -19,6 +19,14 @@ For all .fa files in folder (will need to edit python script for all .fasta file
 python clean_fasta_isoforms.py
 ```
 
+# Run a simple Diamond Top Blast Hit
+
+```
+# Subject will be in the first column and include all genes, even with no hits
+diamond makedb --in query.fa --db query
+diamond blastp -d query -q subject.fa -o results.tsv --max-target-seqs 1 --unal 1 --quiet --header
+```
+
 # Run OrthoFinder
 
 ```
