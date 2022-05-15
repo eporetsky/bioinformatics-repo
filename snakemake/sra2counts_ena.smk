@@ -2,13 +2,13 @@ import glob, os
 import pandas as pd
 
 ########################## Conda environment ###########################
+# conda config --add channels conda-forge
+# conda install genozip
 # conda install -c conda-forge libgcc-ng=11.2.0
 # conda install -c bioconda fastp=0.23.2
 # conda install -c bioconda hisat2=2.2.1
 # conda install -c bioconda sambamba=0.8.2
 # conda install -c bioconda parallel-fastq-dump
-# conda install -c bioconda subread
-# conda config --add channels conda-forge
 # conda install -c conda-forge genozip
 
 ########################## Globals ###########################
@@ -21,10 +21,13 @@ import pandas as pd
 
 # To prolong the life of the hard-drive I recommend to mount ramdisk on the "folder" variable (SRA project name)
 # mkdir PRJNA123456
-# sudo mount -t tmpfs -o size=80000m tmpfs PRJNA123456/
+# sudo mount -t tmpfs -o size=95000m tmpfs PRJNA123456/
 
 # To run this snakemake workflow use:
-# snakemake -p -j1 --snakefile sra2counts_ena.smk --config sra=PRJNA123456 idx=genome_index_name
+# snakemake -F -p -j1 --keep-going --snakefile sra2counts.smk --config sra=PRJNA123456 idx=genome_index
+
+
+
 
 def get_reports(acc):
     # Based on the EBI ENA tutorial on accessing their data
@@ -40,7 +43,6 @@ def get_reports(acc):
     return pd.read_csv(url, sep="\t")
 
 accession_df = get_reports(config['sra'])
-accession_df = accession_df.head()
 fastq_type = "PAIRED" if len(accession_df["fastq_ftp"].values.tolist()[0].split(";")) == 2 else "SINGLE"
 accession_dict = {}
 SAMPLES = []
@@ -64,6 +66,63 @@ rule all:
     expand("genozip/{sample}.genozip", sample=SAMPLES),
 
 # Run fastp trimming on the fastq file
+if fastq_type == "SINGLE":
+  rule run_fastq:
+    output:
+      temp("ramdisk/{sample}.fastq.gz"),
+    params:
+      ftp = lambda wc: accession_dict[wc.get("sample")][0],
+    priority: 1
+    run:
+      shell("rm -f -r ramdisk/*")
+      shell("axel -a -n 16 -o ramdisk {params.ftp}")
+
+  # hisat2 runs faster when using non-compressed fastq files
+  rule run_fastp:
+    input:
+      "ramdisk/{sample}.fastq.gz",
+    output:
+      temp("ramdisk/{sample}.fastq"),
+      "reports/{sample}.html"
+    params:
+      rtp = rtp,
+    priority: 2
+
+    shell:
+      """fastp\
+      --reads_to_process {params.rtp}\
+      --in1 {input[0]} --out1 {output[0]}\
+      --html {output[2]}"""
+  
+  rule run_hisat2:
+    input:
+      temp("ramdisk/{sample}.fastq"),
+    output:
+      "reports/hisat2_{sample}.txt",
+      "ramdisk/{sample}.bam",
+    params:
+      idx = genome_index
+    priority: 3
+    shell:
+      """hisat2 -p 32 --max-intronlen 6000 -x {params.idx} -U {input} --summary-file {output[0]} | \
+      sambamba view -S -f bam -F "not unmapped" -o /dev/stdout /dev/stdin | \
+      sambamba sort  --tmpdir="tmpmba" -t 32 -o {output[1]} /dev/stdin
+      """
+
+  rule run_featureCounts_genozip:
+    input:
+        temp("ramdisk/{sample}.bam"),
+    output:
+        "counts/{sample}.counts",
+        "genozip/{sample}.genozip",
+    params:
+        idx = genome_index,
+    priority: 4
+    run:
+        shell("featureCounts -t exon,CDS -T 32 -a {params.idx}.gtf -o {output[0]} {input}")
+        shell("genozip -e {params.idx}.ref.genozip -i bam -o {output[1]} {input}")
+
+# Run fastp trimming on the fastq file
 if fastq_type == "PAIRED":
   rule run_fastq:
     output:
@@ -74,8 +133,9 @@ if fastq_type == "PAIRED":
       ftp2 = lambda wc: accession_dict[wc.get("sample")][1],
     priority: 1
     run:
-      shell("axel -a -n 32 -o ramdisk {params.ftp1}")
-      shell("axel -a -n 32 -o ramdisk {params.ftp2}")
+      shell("rm -f -r ramdisk/*")
+      shell("axel -a -n 16 -o ramdisk {params.ftp1}")
+      shell("axel -a -n 16 -o ramdisk {params.ftp2}")
 
   # hisat2 runs faster when using non-compressed fastq files
   rule run_fastp:
@@ -85,7 +145,7 @@ if fastq_type == "PAIRED":
     output:
       temp("ramdisk/{sample}_1.fastq"),
       temp("ramdisk/{sample}_2.fastq"),
-      "reports/{sample}.html"
+      "reports/fastp_{sample}.html"
     params:
       rtp = rtp,
     priority: 2
@@ -102,19 +162,20 @@ if fastq_type == "PAIRED":
       temp("ramdisk/{sample}_1.fastq"),
       temp("ramdisk/{sample}_2.fastq"),
     output:
-      "ramdisk/{sample}.bam"
+      "reports/hisat2_{sample}.txt",
+      "ramdisk/{sample}.bam",
     params:
       idx = genome_index
     priority: 3
     shell:
-      """hisat2 -p 32 --max-intronlen 6000 -x {params.idx} -1 {input[0]} -2 {input[1]} | \
-      sambamba view -S -f bam -o /dev/stdout /dev/stdin | \
-      sambamba sort  --tmpdir="tmpmba" -t 32 -o {output} /dev/stdin
+      """hisat2 -p 32 --max-intronlen 6000 -x {params.idx} -1 {input[0]} -2 {input[1]} --summary-file {output[0]} | \
+      sambamba view -S -f bam -F "not unmapped" -o /dev/stdout /dev/stdin | \
+      sambamba sort  --tmpdir="tmpmba" -t 32 -o {output[1]} /dev/stdin
       """
 
   rule run_featureCounts_genozip:
     input:
-        "ramdisk/{sample}.bam",
+        temp("ramdisk/{sample}.bam"),
     output:
         "counts/{sample}.counts",
         "genozip/{sample}.genozip",
