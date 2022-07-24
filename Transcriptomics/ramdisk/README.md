@@ -1,4 +1,4 @@
-# Started using ramdisk on linux to download and process RNA-seq raw data
+# I started using ramdisk on linux to download and process RNA-seq raw data
 Use the included files to convert fastq to bam files\
 Adapted from: https://genozip.readthedocs.io/fastq-to-bam-pipeline.html\
 

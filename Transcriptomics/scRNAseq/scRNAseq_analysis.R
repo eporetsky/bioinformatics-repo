@@ -1,3 +1,4 @@
+# An attempt to run through the steps of scRNA-seq analysis
 # Using conda instead of regular methods because of multiple failures.
 # conda install -c conda-forge r-seurat
 # conda install -c conda-forge r-stringr

@@ -1,6 +1,0 @@
-colnames(df)
-library(dplyr)
-df <- read.table("res_sus_maize_aphid_counts.txt", sep="\t", header=T, row.names=1, skip=1)
-df <- select(df, -c(colnames(df)[1:5]))
-colnames(df)
-write.table(df, "res_sus_maize_aphid_counts_processed.txt", quote=F, sep="\t")
