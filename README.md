@@ -6,7 +6,6 @@ on plant defense responses against pests and disease and I use different\
 bioinformatics approaches to try to answer our biological questions.\
 The repository still needs some work but many of the folders and sub-folders\
 contain more detailed README files to help reproduce the results.\
-\
 
 ## Notes
 * I use a HP Z620 workstation, 16-cores (32-threads), 176gb RAM for the resource intensive analyses
