@@ -34,7 +34,7 @@ tmhmm2-register tmhmm-2.0c.Linux.tar.gz
 # it seems easier to just copy the 3 packages to the existing data/ folder and create a packages/ folder in it.
 ```
 
-### 2. Then edit interproscan.properties (apologies for not uploading the proporties file itself, not sure what the )
+### 2. Then edit interproscan.properties
 
 ```
 
@@ -74,3 +74,14 @@ interproscan.sh -i test_all_appl.fasta -f tsv
 To Run InterProScan:
 ./interproscan.sh -i proteomes/protein_seqs.clean.fa -f tsv,GFF3 -cpu 32 -dp -dra
 ```
+
+# SSP (Short Secreted Peptides) finder
+
+An implementations for the Li et al. 2014 paper about SSPs using two different approaches:\
+1. InterProScan - Output contains the required information, just needs to be parsed
+2. Standalone SignalP + TMHMM - Contains instructions on how to run binaries
+
+# SUPERFAMILY
+
+It is not easy to install but it is possible, see folder for helpful instructions.\
+It is easier to run InterProScan that also runs the SUPERFAMILY analysis as one of the steps.

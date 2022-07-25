@@ -1,5 +1,7 @@
 # Renaming protein sequence fasta files using a csv mapping file
-
+Because OrthoFinder (and other tools) use the fasta name for species/genotype name\
+I have added the script below to take the full portein fasta file name and convert it\
+to the preferred name. Keep the mapping file to remember which version was used.
 ```
 # https://stackoverflow.com/questions/50263422/renaming-files-from-csv-mapping-using-bash-mangles-files
 sed 's/"//g' name_mapping.csv | while IFS=, read orig new; do mv "$orig" "$new"; done
@@ -10,13 +12,16 @@ sed 's/"//g' name_mapping.csv | while IFS=, read orig new; do mv "$orig" "$new";
 # Removing isoform numbers from longest/primary/canonical protein fasta files
 
 ```
-Use python script found in: https://github.com/eporetsky/bioinformatics-assortment/tree/master/genomes/Scripts
+Use python script found in: https://github.com/eporetsky/bioinformatics-assortment/tree/master/Genomes/Scripts/Canonical
 
 For a single file:
 python clean_fasta_isoforms.py Zmays_493_RefGen_V4.protein_primaryTranscriptOnly.primary.primary.fa
 
 For all .fa files in folder (will need to edit python script for all .fasta files)
 python clean_fasta_isoforms.py
+
+The folder contains additional scripts that help extract the canonical/primary transcripts for each fasta file\
+with some database- and genome-specific implemntations.
 ```
 
 # Run a simple Diamond Top Blast Hit
