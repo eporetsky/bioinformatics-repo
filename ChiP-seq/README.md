@@ -1,26 +1,30 @@
 # ChiP-seq Analysis Workflow
-Just started working on this and I will make updates as soon as I can.\
 
-Currently working with Arabidopsis data.\ 
-Genome was downloaded from Phytozome Araport11 (Athaliana_447_Araport11).\
+I have been working on a ChIP-seq analysis tutorial on my website: [https://eporetsky.github.io/tutorials/chipseq](https://eporetsky.github.io/tutorials/chipseq). This page will contain information about specific scripts that I wrote for the tutorial. 
 
+# diffbind2fasta.py
 
-## Clean genome fasta file
+This a Python script designed to extract DNA sequences from a genome FASTA file based on genomic coordinates provided in a BED file. I assume it will work with any BED file but I have only tested it with the BED file generated with DiffBind, hence the name. This is especially useful when you just want to get the sequences from your own genome FASTA file and you don't want to use GRanges.
+
+- Extract sequences from a genome FASTA file using genomic coordinates from a BED file.
+- Automatically handles reverse complement sequences if the strand information is provided.
+- Outputs the extracted sequences in FASTA format for downstream analysis.
+- The script only requires BioPython
+
+The script requires three input files:
+1. A BED file (e.g., DiffBind output) containing genomic regions of interest.
+2. A genome reference FASTA file (e.g., human genome or any organism of interest).
+3. An output file name to save the extracted sequences in FASTA format.
+
+Running the script:
+
 ```
-# The fasta headers contain ';' characters which is not compatible with Genozip. Bash script to clean is based on link below
-# https://yedomon.netlify.app/posts/2021-01-12-awk-how-to-remove-the-rest-of-a-fasta-header-name-after-a-specific-character/
-cat Athaliana_447.fa | awk -F' ' '{print $1}' > Athaliana_447.clean.fa
+python diffbind2fasta.py -b <path_to_bed_file> -f <path_to_genome_fasta> -o <path_to_output_fasta>
 ```
 
+To reproduce the BED files I've created with DiffBind:
 
-## Prepare indexes for processing and compressing files
 ```
-# Build hisat2 genome index for aligning
-hisat2-build -p 32 Athaliana_447_TAIR10.fa Athaliana_447
-
-# Create a gtf file (not sure this will be needed but just in case)
-# gffread Athaliana_447_Araport11.gene.gff3 -T -o Athaliana_447.gtf
-
-# Not critical but I will eventually compress outputs using genozip
-genozip --make-reference Athaliana_447.clean.fa
+dba_report <- dba.report(dba_obj, method = DBA_EDGER, th = 0.05, bUsePval = FALSE, DataType = DBA_DATA_GRANGES)  
+rtracklayer::export(dba_report, con = "output.bed", format = "BED")
 ```
