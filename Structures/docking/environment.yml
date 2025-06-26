@@ -1,0 +1,30 @@
+# conda env create -f environment.yml
+name: ligandock
+channels:
+  #- anaconda
+  - conda-forge
+  - bioconda
+dependencies:
+  - anaconda
+  - python==3.9
+  - numpy
+  - cctbx-base
+  - gemmi
+  - scipy
+  - pandas
+  #- rdkit
+  - openbabel
+  #- pdb2pqr
+  - vina
+  #- autogrid
+  #- swig
+  #- boost-cpp
+  #- libboost
+  - meeko
+  - pip
+  - pip:
+    #- meeko
+    #- numpy
+    - plip=2.3.0
+    - pyKVFinder
+    - git+https://github.com/forlilab/scrubber.git
