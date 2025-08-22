@@ -8,14 +8,10 @@ KMER_LENGTH="$1"
 MAC="$2"      # e.g., 5
 PERCENT="$3"  # e.g., 0.2
 
-# Generate kmers_list_paths.txt automatically
-> kmers_list_paths.txt
-for d in kmc/*/; do
-    sample=$(basename "$d")
-    if [ -f "$d/kmers_with_strand" ]; then
-        echo "$d/kmers_with_strand\t$sample" >> kmers_list_paths.txt
-    fi
-done
+
+# Create kmers_list_paths.txt with full paths and sample names
+# Each line: full_path_to_kmers_with_strand<tab>sample_name
+ls kmc/ | tail -n +2 | awk '{printf "kmc/%s/kmers_with_strand\t%s\n", $NF, $NF}' > kmers_list_paths.txt
 
 # Combine and filter
 ./bin/list_kmers_found_in_multiple_samples -l kmers_list_paths.txt -k "$KMER_LENGTH" --mac "$MAC" -p "$PERCENT" -o kmers_to_use
