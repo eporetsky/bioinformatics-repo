@@ -1,4 +1,16 @@
 #!/bin/bash
+#SBATCH --account=account_name
+#SBATCH --partition=partition_name
+#SBATCH --job-name="S4"
+#SBATCH -N1
+#SBATCH -n1
+#SBATCH --mem=200GB
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH -t 2-00:00:00
+#SBATCH -o "./log/stdout.%j.%N"
+#SBATCH -e "./log/stderr.%j.%N"
+
 set -e
 
 # Usage: ./04_build_kmers_table.sh <KMER_LENGTH>

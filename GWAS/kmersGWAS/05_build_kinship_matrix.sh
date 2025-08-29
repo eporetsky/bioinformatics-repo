@@ -1,13 +1,24 @@
 #!/bin/bash
+#SBATCH --account=account_name
+#SBATCH --partition=partition_name
+#SBATCH --job-name="S5"
+#SBATCH -N1
+#SBATCH -n1
+#SBATCH --mem=200GB
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
+#SBATCH -t 2-00:00:00
+#SBATCH -o "./log/stdout.%j.%N"
+#SBATCH -e "./log/stderr.%j.%N"
+
 set -e
 
-# Usage: ./04_build_kmers_table.sh <KMER_LENGTH>
-# Example: ./04_build_kmers_table.sh 31
+# Usage: ./05_build_kinship_matrix.sh <KMER_LENGTH>
+# Example: ./05_build_kinship_matrix.sh 31
 
 KMER_LENGTH="$1"
 
-# Requires kmers_list_paths.txt and kmers_to_use from previous step
+# Calculate kinship matrix
+./bin/emma_kinship_kmers -t kmers_table -k "$KMER_LENGTH" --maf 0.05 > kmers_table.kinship
 
-./bin/build_kmers_table -l kmers_list_paths.txt -k "$KMER_LENGTH" -a kmers_to_use -o kmers_table
-
-echo "k-mers table created: kmers_table.table and kmers_table.names"
+echo "Kinship matrix created: kmers_table.kinship"
