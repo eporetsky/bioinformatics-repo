@@ -10,9 +10,6 @@ dependencies:
   - wget
   - unzip
   - pip
-  - pip:
-      # Add any Python dependencies for kmersGWAS if needed
-      # - ...
 
 # Note: After creating the environment, run R and execute:
 # install.packages('mvnpermute')

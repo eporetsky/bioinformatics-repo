@@ -12,11 +12,11 @@ elif [ -d v0_2_beta/ ]; then
     mv v0_2_beta/ kmersGWAS
 fi
 
-# Make sure new binaries are executable
+# Make sure KMC and GEMMA are executable
 chmod +x external_programs/kmc_v3
 chmod +x external_programs/gemma_0_96
 
 # Optionally add to PATH (for current session)
-export PATH="$(pwd)/external_programs:$PATH"
+#export PATH="$(pwd)/kmersGWAS/external_programs/KMC/bin:$(pwd)/kmersGWAS/external_programs/GEMMA/bin:$PATH"
 
 echo "kmersGWAS, KMC, and GEMMA are set up."
