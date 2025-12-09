@@ -1,0 +1,26 @@
+name: dada
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.10
+  - r-base=4.3  # Pin recent stable version
+  - tbb
+  - r-rcpp
+  - sra-tools
+  - fastqc
+  - multiqc
+  - cutadapt
+  - pigz
+  - bioconductor-dada2
+  - bioconductor-phyloseq
+  - bioconductor-decipher
+  - bioconductor-deseq2
+  - r-ggplot2
+  - r-vegan
+  - r-dplyr
+  - r-tidyr
+  - r-readr
+  - r-stringr
+
