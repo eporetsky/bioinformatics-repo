@@ -15,21 +15,52 @@ date
 
 set -e
 
-# Usage: ./02_kmc_per_individual_template.sh <KMER_LENGTH> <THREADS>
+# Usage: ./02_kmc_per_individual_template.sh <KMER_LENGTH> <THREADS> [SAMPLES_TSV] [bash|sbatch]
 # Example: ./02_kmc_per_individual_template.sh 31 2
+# Example: ./02_kmc_per_individual_template.sh 31 2 samples.tsv sbatch
+# Run mode: "bash" runs each sample in the current shell; "sbatch" submits each sample as a batch job (default).
 
 KMER_LENGTH="$1"
 THREADS="$2"
+SAMPLES_TSV="${3:-samples.tsv}"
+RUN_MODE="${4:-sbatch}"
 
-FASTQ_DIR="/path/kmer-gwas/fastq"
-KMC_BIN="./external_programs/kmc_v3"
-STRAND_BIN="./bin/kmers_add_strand_information"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SINGLE_SCRIPT="$SCRIPT_DIR/02_kmc_per_individual_template.single.sh"
 
-# Loop over all unique sample names (assuming files are named SAMPLEID*.fastq)
-for fq in "$FASTQ_DIR"/*.fastq; do
-    fname=$(basename "$fq")
-    sample="${fname%%_*}"
-    sample="${sample%%.*}"
+# Resolve samples path if relative
+[[ "$SAMPLES_TSV" != /* ]] && SAMPLES_TSV="$SCRIPT_DIR/$SAMPLES_TSV"
 
-    sbatch 02_kmc_per_individual_template.single.sh "$KMER_LENGTH" "$THREADS" "$sample"
-done
+if [[ ! -f "$SAMPLES_TSV" ]]; then
+  echo "Error: samples TSV not found: $SAMPLES_TSV" >&2
+  exit 1
+fi
+
+if [[ "$RUN_MODE" != "bash" && "$RUN_MODE" != "sbatch" ]]; then
+  echo "Error: RUN_MODE must be 'bash' or 'sbatch', got: $RUN_MODE" >&2
+  exit 1
+fi
+
+# Get unique sample_name values (column 1), skip header.
+# In bash mode we don't use set -e for the per-sample run so one failure doesn't stop the rest.
+FAILED=""
+RUN_LOG=""
+while IFS= read -r sample; do
+  if [[ -z "$sample" ]]; then continue; fi
+  if [[ "$RUN_MODE" == "sbatch" ]]; then
+    sbatch "$SINGLE_SCRIPT" "$KMER_LENGTH" "$THREADS" "$sample" "$SAMPLES_TSV"
+  else
+    run_out="$(mktemp)"
+    if ! bash "$SINGLE_SCRIPT" "$KMER_LENGTH" "$THREADS" "$sample" "$SAMPLES_TSV" > "$run_out" 2>&1; then
+      FAILED="${FAILED:+$FAILED }$sample"
+      RUN_LOG="${RUN_LOG}$(printf '\n--- %s failed ---\n%s\n' "$sample" "$(cat "$run_out")")"
+    fi
+    rm -f "$run_out"
+  fi
+done < <(awk -F'\t' 'NR>1 {print $1}' "$SAMPLES_TSV" | sort -u)
+
+if [[ -n "$FAILED" ]]; then
+  echo "Warning: the following samples failed: $FAILED" >&2
+  echo "$RUN_LOG" >&2
+  exit 1
+fi

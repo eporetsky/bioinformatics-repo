@@ -18,6 +18,12 @@ set -e
 
 KMER_LENGTH="$1"
 
+# Requires kmers_table from step 04
+if [[ ! -f kmers_table.table ]] && [[ ! -f kmers_table.names ]]; then
+  echo "Error: kmers_table not found. Run step 04 first." >&2
+  exit 1
+fi
+
 # Calculate kinship matrix
 ./bin/emma_kinship_kmers -t kmers_table -k "$KMER_LENGTH" --maf 0.05 > kmers_table.kinship
 

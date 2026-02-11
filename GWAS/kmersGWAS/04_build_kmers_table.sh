@@ -18,7 +18,15 @@ set -e
 
 KMER_LENGTH="$1"
 
-# Requires kmers_list_paths.txt and kmers_to_use from previous step
+# Requires kmers_list_paths.txt and kmers_to_use from step 03
+if [[ ! -f kmers_list_paths.txt ]]; then
+  echo "Error: kmers_list_paths.txt not found. Run step 03 first." >&2
+  exit 1
+fi
+if [[ ! -f kmers_to_use ]]; then
+  echo "Error: kmers_to_use not found. Run step 03 first." >&2
+  exit 1
+fi
 
 ./bin/build_kmers_table -l kmers_list_paths.txt -k "$KMER_LENGTH" -a kmers_to_use -o kmers_table
 

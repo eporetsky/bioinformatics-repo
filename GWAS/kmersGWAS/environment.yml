@@ -1,7 +1,7 @@
 name: kmersgwas
 channels:
   - conda-forge
-  - defaults
+  # defaults omitted to avoid ClobberError (libopenblas vs libblas/libcblas/liblapack path clash)
 dependencies:
   - python=2.7
   - r-base
@@ -10,6 +10,8 @@ dependencies:
   - wget
   - unzip
   - pip
+  # For GEMMA (gemma_0_96): needs libgfortran.so.3 (version 3.0.0 provides it; newer conda builds use .so.5)
+  - libgfortran=3.0.0
 
 # Note: After creating the environment, run R and execute:
 # install.packages('mvnpermute')
