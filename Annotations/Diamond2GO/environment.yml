@@ -1,0 +1,15 @@
+# Conda environment for Diamond2GO (no InterProScan)
+# Create with: conda env create -f environment.yml
+# Activate with: conda activate diamond2go
+
+name: diamond2go
+
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - perl
+  - diamond
+  - perl-bioperl
+  - perl-libwww-perl
