@@ -1,0 +1,11 @@
+# KEGG KofamScan conda environment
+# Install with: conda env create -f environment.yml
+name: kofamscan
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - ruby>=2.4
+  - hmmer>=3.1
+  - parallel
